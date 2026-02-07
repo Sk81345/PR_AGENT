@@ -64,7 +64,7 @@ jobs:
 
           echo "Testing Slack Webhook..."
 
-          echo "Webhook length: ${#SLACK_WEBHOOK_URL}"
+          #echo "Webhook length: ${#SLACK_WEBHOOK_URL}"
 
           curl -X POST -H 'Content-type: application/json' \
 
