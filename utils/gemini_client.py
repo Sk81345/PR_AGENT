@@ -1,36 +1,18 @@
 import os
 
-def review_pr_with_gemini(files, diff):
-    api_key = os.environ.get("GOOGLE_API_KEY")
+from github import Github
 
-    if not api_key:
-        return "❌ GOOGLE_API_KEY missing. Skipping AI review."
 
-    try:
-        import google.generativeai as genai
+def get_github_client():
 
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+    token = os.getenv("PR_AGENT_GITHUB_TOKEN") or os.getenv("GITHUB_TOKEN")
 
-        prompt = f"""
-Review the following GitHub Pull Request.
+    if not token:
 
-Files:
-{files}
+        raise ValueError(
 
-Diff:
-{diff}
+            "Missing GitHub token. Set PR_AGENT_GITHUB_TOKEN or GITHUB_TOKEN."
 
-Provide:
-- Summary
-- Risks
-- Bugs
-- Security issues
-- Suggestions
-"""
+        )
 
-        response = model.generate_content(prompt)
-        return response.text
-
-    except Exception as e:
-        return f"❌ Gemini error: {str(e)}"
+    return Github(token)
