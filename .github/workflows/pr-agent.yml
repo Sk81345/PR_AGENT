@@ -53,11 +53,7 @@ jobs:
 
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
 
-        run: |
-
-
-
-          python main.py
+        run: python main.py
 
       #  Direct Slack test (IMPORTANT)
 
