@@ -21,6 +21,13 @@ jobs:
         run: |
           pip install -r requirements.txt
 
+      - name: Test Slack Webhook
+        run: |
+          echo "Testing Slack Webhook..."
+          curl -s -X POST -H 'Content-type: application/json' \
+            --data '{"text":"✅ Test message from GitHub Actions"}' \
+            "${{ secrets.SLACK_WEBHOOK_URL }}" -v
+
       - name: Run PR Agent
         env:
           PYTHONPATH: .
@@ -29,17 +36,5 @@ jobs:
           PR_AGENT_GITHUB_TOKEN: ${{ github.token }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          
-      - name: Test Slack Webhook
-
         run: |
-        
-            echo "Testing Slack Webhook..."
-        
-            curl -s -X POST -H 'Content-type: application/json' \
-        
-              --data '{"text":"✅ Test message from GitHub Actions"}' \
-        
-              "${{ secrets.SLACK_WEBHOOK_URL }}" -v
-         
-         run: python main.py
+          python main.py
