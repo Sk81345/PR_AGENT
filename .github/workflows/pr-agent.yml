@@ -1,8 +1,5 @@
 name: PR Agent
 
-on:
-  pull_request:
-    types: [opened, synchronize, reopened]
 
 jobs:
   pr-agent:
