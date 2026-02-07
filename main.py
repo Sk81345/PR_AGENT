@@ -20,6 +20,8 @@ def main():
     # Get PR files & diff
     files, diff = get_pr_files_and_diff(repo_name, pr_number)
 
+    #files_count = len(files)
+    files = list(files)
     files_count = len(files)
     diff_length = len(diff)
 
