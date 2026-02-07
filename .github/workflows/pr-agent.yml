@@ -23,12 +23,10 @@ jobs:
 
       - name: Run PR Agent
         env:
+          PYTHONPATH: .
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_AGENT_REPO: ${{ github.repository }}
-          PR_AGENT_GITHUB_TOKEN: ${{ secrets.PR_AGENT_GITHUB_TOKEN }}
+          PR_AGENT_GITHUB_TOKEN: ${{ github.token }}
           GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
           SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-        run: |
-         export PYTHONPATH=$PWD
-         python main.py
-
+        run: python main.py
