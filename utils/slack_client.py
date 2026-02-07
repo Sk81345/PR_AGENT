@@ -1,20 +1,40 @@
 import os
+
+import json
+
 import requests
+ 
+def send_slack_notification(message: str):
 
-def send_slack_message(message: str):
-    webhook_url = os.getenv("SLACK_WEBHOOK_URL")
+    url = os.getenv("SLACK_WEBHOOK_URL")
+ 
+    if not url:
 
-    if not webhook_url:
-        print("⚠️ SLACK_WEBHOOK_URL not set. Skipping Slack notification.")
+        print("SLACK_WEBHOOK_URL is missing")
+
         return
-
-    payload = {
-        "text": message
-    }
+ 
+    payload = {"text": message}
 
     try:
-        response = requests.post(webhook_url, json=payload, timeout=10)
-        response.raise_for_status()
-        print("✅ Slack notification sent")
+
+        r = requests.post(url, data=json.dumps(payload), headers={"Content-Type": "application/json"})
+
+        print(" Slack request done")
+
+        print("Slack status:", r.status_code)
+
+        print("Slack response:", r.text)
+ 
+        # If Slack didn't accept, fail the workflow so we know immediately
+
+        if r.status_code != 200 or r.text.strip().lower() != "ok":
+
+            raise Exception(f"Slack webhook failed: {r.status_code} {r.text}")
+ 
     except Exception as e:
-        print(f"❌ Slack notification failed: {e}")
+
+        print(" Slack exception:", str(e))
+
+        raise
+ 
