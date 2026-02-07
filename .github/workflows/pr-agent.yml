@@ -1,40 +1,74 @@
 name: PR Agent
-
+ 
 on:
+
   pull_request:
+
     types: [opened, synchronize, reopened]
-
+ 
 jobs:
+
   pr-agent:
+
     runs-on: ubuntu-latest
-
+ 
     steps:
+
       - name: Checkout repo
+
         uses: actions/checkout@v4
-
+ 
       - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
 
+        uses: actions/setup-python@v5
+
+        with:
+
+          python-version: "3.11"
+ 
       - name: Install dependencies
+
         run: |
+
+          python -m pip install --upgrade pip
+
           pip install -r requirements.txt
+ 
+      - name: Run PR Agent
+
+        env:
+
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+          PR_AGENT_REPO: ${{ github.repository }}
+
+          PR_AGENT_GITHUB_TOKEN: ${{ secrets.PR_AGENT_GITHUB_TOKEN }}
+
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+        run: |
+
+      
+
+          python main.py
+ 
+      #  Direct Slack test (IMPORTANT)
 
       - name: Test Slack Webhook
-        run: |
-          echo "Testing Slack Webhook..."
-          curl -s -X POST -H 'Content-type: application/json' \
-            --data '{"text":"✅ Test message from GitHub Actions"}' \
-            "${{ secrets.SLACK_WEBHOOK_URL }}" -v
 
-      - name: Run PR Agent
-        env:
-          PYTHONPATH: .
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_AGENT_REPO: ${{ github.repository }}
-          PR_AGENT_GITHUB_TOKEN: ${{ github.token }}
-          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        if: always()
+
         run: |
-          python main.py
+
+          echo "Testing Slack Webhook..."
+
+          curl -s -X POST \
+
+            -H "Content-Type: application/json" \
+
+            --data '{"text":" GitHub Actions Slack Test Message"}' \
+
+            "${{ secrets.SLACK_WEBHOOK_URL }}" -v
+ 
