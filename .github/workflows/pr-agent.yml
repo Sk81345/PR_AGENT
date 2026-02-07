@@ -57,19 +57,41 @@ jobs:
 
       #  Direct Slack test (IMPORTANT)
 
-      - name: Test Slack Webhook
 
-        if: always()
+
+
+      - name: Test Slack Webhook
 
         run: |
 
           echo "Testing Slack Webhook..."
 
-          curl -s -X POST \
+          echo "Webhook length: ${#SLACK_WEBHOOK_URL}"
 
-            -H "Content-Type: application/json" \
+          curl -X POST -H 'Content-type: application/json' \
 
-            --data '{"text":" GitHub Actions Slack Test Message"}' \
+            --data '{"text":"Test message from GitHub Actions"}' \
 
-            "${{ secrets.SLACK_WEBHOOK_URL }}" -v
+            "$SLACK_WEBHOOK_URL"
 
+        env:
+
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+      - name: Run PR Agent
+
+        env:
+
+          PYTHONPATH: ${{ github.workspace }}
+
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+
+          PR_AGENT_REPO: ${{ github.repository }}
+
+          PR_AGENT_GITHUB_TOKEN: ${{ secrets.PR_AGENT_GITHUB_TOKEN }}
+
+          GOOGLE_API_KEY: ${{ secrets.GOOGLE_API_KEY }}
+
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+
+        run: python main.py
